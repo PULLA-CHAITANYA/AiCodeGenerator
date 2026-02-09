@@ -55,6 +55,12 @@ crowd-anomaly-system/
 │   ├── api.py
 │   └── dashboard.py
 │
+│── summarization/
+│   ├── pattern_classifier.py
+│   ├── event_segmenter.py
+│   ├── video_annotator.py
+│   └── summary_generator.py
+│
 │── requirements.txt
 │── run.py
 │── README.md
@@ -141,9 +147,11 @@ python run.py --video data/raw_videos/test_video.mp4
 ```
 
 Generated artifacts in `outputs/`:
-- `motion_overlay.mp4` (frame-level motion heatmaps)
-- `score_plot.png` (module + fused scores)
-- `alerts.log` (anomaly frame events)
+- `annotated_video.mp4` (boxes, trajectories, flow heatmap, density bar, event labels)
+- `anomaly_timeline.json` (machine-readable event segments with timecodes and contributors)
+- `summary.txt` (human-readable deterministic narrative summary)
+- `graphs/module_scores.png` and `graphs/severity_timeline.png`
+- `motion_overlay.mp4`, `score_plot.png`, `alerts.log`
 
 ---
 
@@ -154,6 +162,20 @@ Generated artifacts in `outputs/`:
 - Final anomaly decision uses weighted fusion from `pipelines/ensemble.py`.
 
 ---
+
+
+## 7.1) Video Summarization and Pattern Explanation
+
+After inference, the system automatically:
+- Segments timeline into `normal`, `warning`, `critical` regions using score transitions.
+- Classifies patterns from computed features (deterministic rules):
+  - Normal flow
+  - Sudden acceleration
+  - Directional chaos
+  - Stampede-like motion
+  - Overcrowding buildup
+  - Panic dispersal
+- Exports both JSON and text summaries with exact timecodes.
 
 ## 8) Optional REST API
 
