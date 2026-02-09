@@ -200,7 +200,30 @@ Upload a video and inspect time-series anomaly scores interactively.
 
 ---
 
-## 10) Notes for Production
+
+## 11) Benchmarking Accuracy + Loss
+
+Generate a multi-video synthetic benchmark and evaluate frame-level metrics:
+
+```bash
+python scripts/generate_synthetic_crowd_videos.py --dataset_dir data/synth_benchmark --n_normal 3 --n_anomaly 3
+python scripts/evaluate_pipeline.py --dataset_dir data/synth_benchmark --out_json outputs/evaluation_report.json
+```
+
+Motion GAN loss history is automatically exported after training to:
+- `outputs/motion_gan_loss.json`
+
+You can also bootstrap a URL manifest and download multiple videos:
+
+```bash
+python scripts/fetch_anomaly_videos.py --init_manifest
+python scripts/fetch_anomaly_videos.py --manifest data/video_manifest.json --out_dir data/raw_videos
+```
+
+---
+
+## 12) Notes for Production
+
 
 - Swap Farneback with RAFT for higher motion quality.
 - Add calibration per camera view for thresholds.

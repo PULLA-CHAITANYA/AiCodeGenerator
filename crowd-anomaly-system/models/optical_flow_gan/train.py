@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 
 import numpy as np
@@ -49,6 +50,7 @@ def train(normal_flow_dir: Path, epochs: int) -> None:
     g_opt = torch.optim.Adam(g.parameters(), lr=CONFIG.motion.lr, betas=(0.5, 0.999))
     d_opt = torch.optim.Adam(d.parameters(), lr=CONFIG.motion.lr, betas=(0.5, 0.999))
 
+    history = []
     for epoch in range(1, epochs + 1):
         for x, y in dl:
             x, y = x.to(device), y.to(device)
@@ -72,11 +74,19 @@ def train(normal_flow_dir: Path, epochs: int) -> None:
             g_loss.backward()
             g_opt.step()
 
+        epoch_row = {"epoch": epoch, "d_loss": float(d_loss.item()), "g_loss": float(g_loss.item())}
+        history.append(epoch_row)
         print(f"Epoch {epoch}/{epochs} | D: {d_loss.item():.4f} | G: {g_loss.item():.4f}")
 
     ckpt = CONFIG.paths.checkpoints_dir / "flow_gan.pt"
     torch.save({"generator": g.state_dict(), "discriminator": d.state_dict()}, ckpt)
     print(f"Saved checkpoint: {ckpt}")
+
+    loss_json = CONFIG.paths.outputs_dir / "motion_gan_loss.json"
+    loss_json.parent.mkdir(parents=True, exist_ok=True)
+    with open(loss_json, "w", encoding="utf-8") as f:
+        json.dump(history, f, indent=2)
+    print(f"Saved loss history: {loss_json}")
 
 
 if __name__ == "__main__":

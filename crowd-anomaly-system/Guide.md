@@ -221,3 +221,47 @@ Then open:
 - `outputs/annotated_video.mp4`
 - `outputs/anomaly_timeline.json`
 - `outputs/summary.txt`
+
+
+
+## 13) Pull multiple videos automatically (optional)
+
+You can create a URL manifest and download multiple videos:
+
+```bash
+python scripts/fetch_anomaly_videos.py --init_manifest
+python scripts/fetch_anomaly_videos.py --manifest data/video_manifest.json --out_dir data/raw_videos
+```
+
+Then prepare/train/infer as usual.
+
+---
+
+## 14) Measure accuracy + loss on multiple videos
+
+### A) Generate a synthetic benchmark set (normal + anomaly clips)
+
+```bash
+python scripts/generate_synthetic_crowd_videos.py --dataset_dir data/synth_benchmark --n_normal 3 --n_anomaly 3
+```
+
+### B) Train motion model and collect loss history
+
+```bash
+python -m models.optical_flow_gan.train --normal_flow_dir data/optical_flow --epochs 10
+```
+
+Loss curve data is saved to:
+- `outputs/motion_gan_loss.json`
+
+### C) Evaluate full pipeline accuracy/F1
+
+```bash
+python scripts/evaluate_pipeline.py --dataset_dir data/synth_benchmark --out_json outputs/evaluation_report.json
+```
+
+This report includes:
+- overall accuracy / precision / recall / f1
+- per-video metrics
+- mean module scores
+
