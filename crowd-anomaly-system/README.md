@@ -1,5 +1,7 @@
 # Crowd Anomaly Detection System
 
+> For an end-to-end practical runbook (setup, module wiring, API, dashboard, and validation), see `Guide.md`.
+
 Production-style, modular, end-to-end pipeline for abnormal crowd behavior detection using three complementary methods:
 
 1. **Motion-based (Optical Flow + GAN reconstruction)**
