@@ -27,7 +27,9 @@ document.addEventListener('DOMContentLoaded', function () {
         assistantMessage.textContent = '';
         explanationText.style.display = 'none';
         explanationText.textContent = '';
-        explainSection.style.display = 'none';
+        if (explainSection) {
+            explainSection.style.display = 'none';
+        }
 
         try {
             const response = await fetch('/generate', {
@@ -55,7 +57,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             Prism.highlightAll();
             resultsContainer.style.display = 'flex';
-            explainSection.style.display = 'block';
+            if (explainSection) {
+                explainSection.style.display = 'block';
+            }
 
         } catch (error) {
             errorMessage.textContent = `${error.message}`;

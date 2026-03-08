@@ -1,4 +1,5 @@
 import os
+import re
 import requests
 from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
@@ -17,9 +18,30 @@ CAPABILITY_KEYWORDS = (
     "what can you do",
     "what do you do",
     "how can you help",
-    "help me",
+    "how can you help me",
     "your capabilities",
 )
+
+CAPABILITY_PREFIXES = (
+    "",
+    "hey",
+    "hey there",
+    "hi",
+    "hello",
+    "hello there",
+    "oh",
+    "cool",
+    "wow",
+    "an agent here",
+    "oh cool",
+    "oh cool an agent here",
+)
+
+CAPABILITY_PROMPTS = {
+    " ".join(part for part in (prefix, keyword) if part)
+    for prefix in CAPABILITY_PREFIXES
+    for keyword in CAPABILITY_KEYWORDS
+}
 
 CAPABILITY_RESPONSE = (
     "I can help you turn a coding problem into complete recursive and iterative solutions, "
@@ -38,8 +60,9 @@ def extract_all_code_blocks(text):
 
 
 def is_capability_question(prompt):
-    normalized_prompt = " ".join(prompt.lower().split())
-    return any(keyword in normalized_prompt for keyword in CAPABILITY_KEYWORDS)
+    normalized_prompt = re.sub(r"[^a-z\s]", " ", prompt.lower())
+    normalized_prompt = " ".join(normalized_prompt.split())
+    return normalized_prompt in CAPABILITY_PROMPTS
 
 @app.route("/")
 def index():
