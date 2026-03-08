@@ -4,7 +4,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const loader = document.getElementById('loader');
     const resultsContainer = document.getElementById('results-container');
     const errorMessage = document.getElementById('error-message');
+    const assistantMessage = document.getElementById('assistant-message');
     const explainBtn = document.getElementById('explain-btn');
+    const explainSection = document.querySelector('.explain-section');
     const explanationText = document.getElementById('explanation-text');
 
     const recursiveCodeElement = document.getElementById('recursive-code');
@@ -21,8 +23,13 @@ document.addEventListener('DOMContentLoaded', function () {
         generateBtn.textContent = 'Generating...';
         resultsContainer.style.display = 'none';
         errorMessage.style.display = 'none';
+        assistantMessage.style.display = 'none';
+        assistantMessage.textContent = '';
         explanationText.style.display = 'none';
         explanationText.textContent = '';
+        if (explainSection) {
+            explainSection.style.display = 'none';
+        }
 
         try {
             const response = await fetch('/generate', {
@@ -36,6 +43,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 throw new Error(data.error || `HTTP error! Status: ${response.status}`);
             }
 
+            if (data.response_type === 'capabilities') {
+                assistantMessage.textContent = data.assistant_message;
+                assistantMessage.style.display = 'block';
+                return;
+            }
+
             recursiveCodeElement.textContent = data.recursive_solution || "// Recursive code not found";
             recursiveCodeElement.className = `language-${language}`;
 
@@ -44,7 +57,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             Prism.highlightAll();
             resultsContainer.style.display = 'flex';
-            document.querySelector('.explain-section').style.display = 'block';
+            if (explainSection) {
+                explainSection.style.display = 'block';
+            }
 
         } catch (error) {
             errorMessage.textContent = `${error.message}`;

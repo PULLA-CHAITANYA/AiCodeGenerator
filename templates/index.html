@@ -18,7 +18,7 @@
         </header>
 
         <form id="generator-form">
-            <textarea id="prompt" name="prompt" rows="4" placeholder="e.g., 'A function to calculate the factorial of a number'" required></textarea>
+            <textarea id="prompt" name="prompt" rows="4" placeholder="e.g., 'A function to calculate the factorial of a number' or 'what can you do?'" required></textarea>
             
             <div class="controls">
                 <select id="language" name="language">
@@ -34,6 +34,7 @@
 
         <div id="loader" class="loader" style="display: none;"></div>
         <div id="error-message" class="error-message" style="display: none;"></div>
+        <div id="assistant-message" class="assistant-message" style="display: none;"></div>
 
         <div id="results-container" class="results-container" style="display: none;">
             <div class="result-block">
