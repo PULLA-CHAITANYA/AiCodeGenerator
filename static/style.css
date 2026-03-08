@@ -138,6 +138,16 @@ pre[class*="language-"] {
     margin: 1rem 0;
 }
 
+.assistant-message {
+    color: var(--text-color);
+    background-color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    line-height: 1.6;
+}
+
 @media (max-width: 800px) {
     .results-container {
         flex-direction: column;

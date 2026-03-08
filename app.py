@@ -12,6 +12,22 @@ TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 TOGETHER_API_URL = "https://api.together.xyz/v1/chat/completions"
 MODEL_NAME = "mistralai/Mixtral-8x7B-Instruct-v0.1"
 
+CAPABILITY_KEYWORDS = (
+    "what can u do",
+    "what can you do",
+    "what do you do",
+    "how can you help",
+    "help me",
+    "your capabilities",
+)
+
+CAPABILITY_RESPONSE = (
+    "I can help you turn a coding problem into complete recursive and iterative solutions, "
+    "explain the generated code in beginner-friendly language, and switch the output between "
+    "Python, JavaScript, Java, C++, and Go. Try describing a programming task such as "
+    "'build a Fibonacci function' or 'reverse a linked list.'"
+)
+
 def extract_all_code_blocks(text):
     """Extracts all code blocks from AI response wrapped in triple backticks."""
     if "```" in text:
@@ -20,21 +36,32 @@ def extract_all_code_blocks(text):
         return code_blocks
     return [text.strip()]
 
+
+def is_capability_question(prompt):
+    normalized_prompt = " ".join(prompt.lower().split())
+    return any(keyword in normalized_prompt for keyword in CAPABILITY_KEYWORDS)
+
 @app.route("/")
 def index():
     return render_template("index.html")
 
 @app.route("/generate", methods=["POST"])
 def generate():
-    if not TOGETHER_API_KEY:
-        return jsonify({"error": "API key is not configured. Please add your TOGETHER_API_KEY to the .env file."}), 500
-
     data = request.json
     prompt = data.get("prompt")
     language = data.get("language")
 
     if not prompt or not language:
         return jsonify({"error": "A problem description and language are required."}), 400
+
+    if is_capability_question(prompt):
+        return jsonify({
+            "response_type": "capabilities",
+            "assistant_message": CAPABILITY_RESPONSE
+        })
+
+    if not TOGETHER_API_KEY:
+        return jsonify({"error": "API key is not configured. Please add your TOGETHER_API_KEY to the .env file."}), 500
 
     full_prompt = f"""
 You are an expert {language} programmer.
